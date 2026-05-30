@@ -12,7 +12,7 @@ const userSignup = async (req: Request, res: Response) => {
       data: result.rows[0]
     })
 
-  } catch (error) {
+  } catch (error: IError) {
     res.status(500).send({
       status: false,
       message: error.message
@@ -21,7 +21,13 @@ const userSignup = async (req: Request, res: Response) => {
 }
 const userLogin = async (req: Request, res: Response) => {
   try {
-    console.log(req.body)
+    const result = await authService.loginUser(req.body)
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Login successful",
+      data: result
+    })
   } catch (error) {
     res.status(500).send({
       status: false,
