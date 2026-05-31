@@ -3,6 +3,7 @@ import type { ILoginUser, IUser } from "./auth.interface";
 import { pool } from "../../db";
 import jwt from 'jsonwebtoken'
 import config from "../../config";
+import { signToken } from "../../utils/jwt";
 
 const createUserIntoDB = async (payload: IUser) => {
   const { name, email, password, role } = payload
@@ -39,14 +40,8 @@ const loginUser = async (payload: ILoginUser) => {
     throw new Error('Invalid Credentials')
   }
 
-  // JWT TOKEN GENERATE
-  const jwtPayload = {
-    id: user.id,
-    name: user.name,
-    email: user.email
-  }
+  const accessToken = signToken({id: user.id, name: user.name, email: user.email, role: user.role})
 
-  const accessToken = jwt.sign(jwtPayload, config.jwt_secret as string)
   // delete user.password
   const { password: _, ...userWithoutPassword } = user // pick data without password, it's called destructring or rest operator
   const loginInfo = {

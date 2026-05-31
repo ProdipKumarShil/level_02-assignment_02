@@ -8,9 +8,11 @@ dotenv.config({
 const config = {
   port: process.env.PORT,
   connection_string: process.env.CONNECTIONSTRING,
-  jwt_secret: process.env.JWT_SECRET,
+  access_secret: process.env.ACCESS_SECRET,
+  refresh_secret: process.env.REFRESH_SECRET,
   access_expire: process.env.ACCESS_EXPIRE,
   refresh_expire: process.env.REFRESH_EXPIRE,
+
 }
 
 export default config

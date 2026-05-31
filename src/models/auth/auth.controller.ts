@@ -12,13 +12,14 @@ const userSignup = async (req: Request, res: Response) => {
       data: result.rows[0]
     })
 
-  } catch (error: IError) {
+  } catch (error) {
     res.status(500).send({
       status: false,
       message: error.message
     })
   }
 }
+
 const userLogin = async (req: Request, res: Response) => {
   try {
     const result = await authService.loginUser(req.body)
