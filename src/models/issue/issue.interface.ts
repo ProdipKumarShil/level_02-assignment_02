@@ -10,12 +10,14 @@ export enum EIssueStatus{
 }
 
 export interface IIssue {
-  id: string;
+  id: number;
   title: string;
   description: string;
   type: EIssueType;
   status: EIssueStatus;
-  reporter_id: string;
+  reporter_id: number;
   created_at?: string;
   updated_at?: string;
 }
+
+export type IPIssue = Omit<IIssue, 'id' | 'status' | 'reporter_id' | 'created_at' | 'updated_at'>
