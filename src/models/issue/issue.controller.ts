@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { issueService } from "./issue.service";
 import { decodeToken } from "../../utils/jwt";
+import type { EIssueStatus, EIssueType } from "./issue.interface";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
@@ -19,7 +20,6 @@ const createIssue = async (req: Request, res: Response) => {
       message: 'Failed to create issue'
     })
 
-
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
@@ -30,11 +30,47 @@ const createIssue = async (req: Request, res: Response) => {
 }
 
 const getAllIssue = async (req: Request, res: Response) => {
+  try {
+    const sort = (req.query.sort as string) === 'oldest' ? 'oldest' : 'newest';
+    const type = req.query.type as any; 
+    const status = req.query.status as any;
 
+    const formattedData = await issueService.getIssueFromDB({ sort, status, type });
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Issues retrived successfully",
+      data: formattedData
+    });
+
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: 'Failed to get issues',
+      data: error.message
+    })
+  }
 }
 
 const getSingleIssue = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id
 
+    const issue = await issueService.getSingleIssueFromDB(id as string)
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Issues retrieved successfully",
+      data: issue
+    });
+    
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: 'Failed to get issues',
+      data: error.message
+    })
+  }
 }
 
 const updateIssue = async (req: Request, res: Response) => {
@@ -42,7 +78,7 @@ const updateIssue = async (req: Request, res: Response) => {
 }
 
 const deleteIssue = async (req: Request, res: Response) => {
-
+  
 }
 
 export const issueController = {
