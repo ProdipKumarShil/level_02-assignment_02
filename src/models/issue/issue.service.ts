@@ -1,4 +1,6 @@
 import { pool } from "../../db";
+import { decodeToken } from "../../utils/jwt";
+import type { IPUser } from "../auth/auth.interface";
 import { EIssueStatus, type IIssue, type IPIssue, type IQueryFilters, type TIssue } from "./issue.interface";
 
 const createIssueIntoDB = async (id: number, payload: IPIssue) => {
@@ -86,10 +88,10 @@ const getSingleIssueFromDB = async (id: string) => {
 
   const issueResult = issueData.rows[0]
 
-  if(!issueResult){
+  if (!issueResult) {
     throw new Error('Issue not found!')
   }
-  
+
   const userId = issueResult.reporter_id
 
   const reporterData = await pool.query(`
@@ -99,7 +101,7 @@ const getSingleIssueFromDB = async (id: string) => {
   const reporterResult = reporterData.rows[0]
 
   // console.log({ issueResult, reporterResult })
-  
+
   const issue: TIssue = {
     id: issueResult.id,
     title: issueResult.title,
@@ -118,6 +120,14 @@ const getSingleIssueFromDB = async (id: string) => {
   return issue
 }
 
+const deleteSingleIssueFromDB = async (id: string) => {
+  const result = await pool.query(`
+    DELETE FROM issues WHERE id=$1  
+  `, [id])
+
+  return result
+}
+
 export const issueService = {
-  createIssueIntoDB, getIssueFromDB, getSingleIssueFromDB
+  createIssueIntoDB, getIssueFromDB, getSingleIssueFromDB, deleteSingleIssueFromDB
 }

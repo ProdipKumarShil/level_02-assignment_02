@@ -32,14 +32,14 @@ const createIssue = async (req: Request, res: Response) => {
 const getAllIssue = async (req: Request, res: Response) => {
   try {
     const sort = (req.query.sort as string) === 'oldest' ? 'oldest' : 'newest';
-    const type = req.query.type as any; 
+    const type = req.query.type as any;
     const status = req.query.status as any;
 
     const formattedData = await issueService.getIssueFromDB({ sort, status, type });
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: "Issues retrived successfully",
+      message: "Issues retrieved successfully",
       data: formattedData
     });
 
@@ -63,7 +63,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
       message: "Issues retrieved successfully",
       data: issue
     });
-    
+
   } catch (error) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
@@ -78,7 +78,31 @@ const updateIssue = async (req: Request, res: Response) => {
 }
 
 const deleteIssue = async (req: Request, res: Response) => {
-  
+  console.log('first')
+  try {
+    const id = req.params.id
+    const result = await issueService.deleteSingleIssueFromDB(id as string)
+
+    if (result.rowCount === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({
+        success: false,
+        message: "Issue not found"
+      });
+    }
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "Issue deleted successfully"
+    });
+
+
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: 'Failed to delete issues',
+      data: error.message
+    })
+  }
 }
 
 export const issueController = {

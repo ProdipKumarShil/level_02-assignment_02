@@ -12,7 +12,7 @@ const auth = (...roles: ROLES[]) => {
       const token = req.headers.authorization
 
       if (!token) {
-        res.status(StatusCodes.UNAUTHORIZED).json({
+        return res.status(StatusCodes.UNAUTHORIZED).json({
           status: false,
           message: 'Unauthorize access'
         })
@@ -27,15 +27,16 @@ const auth = (...roles: ROLES[]) => {
 
       const user = userData.rows[0]
 
+
       if (userData.rows.length === 0) {
-        res.status(StatusCodes.NOT_FOUND).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           status: false,
           message: 'User not found'
         })
       }
 
       if (roles.length && !roles.includes(user.role)) {
-        res.status(StatusCodes.FORBIDDEN).json({
+        return res.status(StatusCodes.FORBIDDEN).json({
           status: false,
           message: 'Forbidden, This role has no access'
         })
