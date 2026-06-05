@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { issueService } from "./issue.service";
 import { decodeToken } from "../../utils/jwt";
-import type { EIssueStatus, EIssueType } from "./issue.interface";
+import type { EIssueStatus, EIssueType, IUpdateIssue } from "./issue.interface";
 
 const createIssue = async (req: Request, res: Response) => {
   try {
@@ -74,11 +74,34 @@ const getSingleIssue = async (req: Request, res: Response) => {
 }
 
 const updateIssue = async (req: Request, res: Response) => {
+  try {
+    const payload: IUpdateIssue = req.body
+    const jwtToken = req.headers.authorization
+    const id = req.params.id
+    const result = await issueService.updateIssueIntoDB(id as string, jwtToken as string, payload)
+    if (result?.rowCount === 1) {
+      res.status(StatusCodes.OK).json({
+        success: true,
+        message: "Issues updated successfully",
+        data: result?.rows[0]
+      });
+    }
 
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Failed to update issue",
+      });
+
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      status: false,
+      message: 'Failed to update issues',
+      data: error.message
+    })
+  }
 }
 
 const deleteIssue = async (req: Request, res: Response) => {
-  console.log('first')
   try {
     const id = req.params.id
     const result = await issueService.deleteSingleIssueFromDB(id as string)

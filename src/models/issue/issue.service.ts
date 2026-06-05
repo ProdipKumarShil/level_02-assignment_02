@@ -1,7 +1,7 @@
 import { pool } from "../../db";
 import { decodeToken } from "../../utils/jwt";
 import type { IPUser } from "../auth/auth.interface";
-import { EIssueStatus, type IIssue, type IPIssue, type IQueryFilters, type TIssue } from "./issue.interface";
+import { EIssueStatus, type IIssue, type IPIssue, type IQueryFilters, type IUpdateIssue, type TIssue } from "./issue.interface";
 
 const createIssueIntoDB = async (id: number, payload: IPIssue) => {
   const { title, description, type } = payload
@@ -128,6 +128,76 @@ const deleteSingleIssueFromDB = async (id: string) => {
   return result
 }
 
+const updateIssueIntoDB = async (id: string, jwtToken: string, payload: IUpdateIssue) => {
+  const { title, description, type } = payload
+
+  const updateData = async () => {
+    const result = await pool.query(`
+      UPDATE issues
+      SET
+      title=COALESCE($1, title),
+      description=COALESCE($2, description),
+      type=COALESCE($3, type)
+      WHERE id=$4 RETURNING *
+      `, [title, description, type, id])
+    return result
+  }
+
+  const decodedUser = decodeToken(jwtToken as string)
+  // check user exist or not
+  const issueResult = await pool.query(`
+      SELECT * FROM issues WHERE id=$1
+    `, [id])
+  const issueData = issueResult.rows[0]
+
+  if (!issueData) {
+    throw new Error('Issue does not exist!')
+  }
+
+  // check user
+  const userResult = await pool.query(`
+    SELECT * FROM users WHERE id=$1
+    `, [decodedUser.id])
+
+  const userData = userResult.rows[0]
+
+  if (!userData) {
+    throw new Error('User does not exist!')
+  }
+
+  if (decodedUser.role === 'maintainer') {
+    return await updateData()
+  }
+
+  if (decodedUser.role === 'contributor') {
+    // checking same user
+    const reportId = issueData.reporter_id
+    const reportUserResult = await pool.query(`
+      SELECT * FROM users WHERE id=$1  
+    `, [reportId])
+
+    const reportUserData = reportUserResult.rows[0]
+
+    // check same reporter with decoded mail and fetched data mail
+    if (reportUserData.email === decodedUser.email && reportUserData.status == 'open') {
+      return await updateData()
+    } else {
+      throw new Error('Invalid contributor or status!')
+
+    }
+
+  }
+}
+// {
+//   id: 12,
+//   name: 'Emma Watson',
+//   email: 'emma.watson@devpulse.com',
+//   role: 'maintainer',
+//   iat: 1780648063,
+//   exp: 1780734463
+// }
+
+
 export const issueService = {
-  createIssueIntoDB, getIssueFromDB, getSingleIssueFromDB, deleteSingleIssueFromDB
+  createIssueIntoDB, getIssueFromDB, getSingleIssueFromDB, deleteSingleIssueFromDB, updateIssueIntoDB
 }

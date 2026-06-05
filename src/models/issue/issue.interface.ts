@@ -1,11 +1,11 @@
 import type { IPUser } from "../auth/auth.interface";
 
-export enum EIssueType{
+export enum EIssueType {
   BUG = 'bug',
   FEATURE_REQUEST = 'feature_request'
 }
 
-export enum EIssueStatus{
+export enum EIssueStatus {
   OPEN = 'open',
   IN_PROGRESS = 'in_progress',
   RESOLVED = 'resolved'
@@ -34,4 +34,10 @@ export type TReporter = Omit<IPUser, 'email'>
 
 export type TIssue = Omit<IIssue, 'reporter_id'> & {
   reporter: TReporter
+}
+
+export interface IUpdateIssue {
+  title: string;
+  description: string;
+  type: string;
 }
