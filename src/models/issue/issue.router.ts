@@ -5,7 +5,7 @@ import { USER_ROLE } from "../../types";
 
 const router = Router()
 
-router.post('/', auth(USER_ROLE.contributor) ,issueController.createIssue)
+router.post('/', auth(USER_ROLE.contributor, USER_ROLE.maintainer) ,issueController.createIssue)
 router.get('/', issueController.getAllIssue)
 router.put('/:id', issueController.updateIssue)
 router.get('/:id', issueController.getSingleIssue)

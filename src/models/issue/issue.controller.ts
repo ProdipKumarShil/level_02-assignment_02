@@ -20,7 +20,7 @@ const createIssue = async (req: Request, res: Response) => {
       message: 'Failed to create issue'
     })
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: 'Failed to create user',
@@ -43,7 +43,7 @@ const getAllIssue = async (req: Request, res: Response) => {
       data: formattedData
     });
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: 'Failed to get issues',
@@ -64,7 +64,7 @@ const getSingleIssue = async (req: Request, res: Response) => {
       data: issue
     });
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: 'Failed to get issues',
@@ -92,7 +92,7 @@ const updateIssue = async (req: Request, res: Response) => {
         message: "Failed to update issue",
       });
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: 'Failed to update issues',
@@ -119,7 +119,7 @@ const deleteIssue = async (req: Request, res: Response) => {
     });
 
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: false,
       message: 'Failed to delete issues',

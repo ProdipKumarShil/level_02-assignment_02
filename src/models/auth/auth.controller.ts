@@ -12,7 +12,7 @@ const userSignup = async (req: Request, res: Response) => {
       data: result.rows[0]
     })
 
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).send({
       status: false,
       message: error.message
@@ -29,7 +29,7 @@ const userLogin = async (req: Request, res: Response) => {
       message: "Login successful",
       data: result
     })
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).send({
       status: false,
       message: error.message

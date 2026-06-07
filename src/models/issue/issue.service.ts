@@ -105,8 +105,8 @@ const getSingleIssueFromDB = async (id: string) => {
   const issue: TIssue = {
     id: issueResult.id,
     title: issueResult.title,
-    description: issueResult.title,
-    type: issueResult.title,
+    description: issueResult.description,
+    type: issueResult.type,
     status: issueResult.status,
     reporter: {
       id: reporterResult.id,

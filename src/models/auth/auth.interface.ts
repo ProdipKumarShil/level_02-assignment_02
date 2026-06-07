@@ -15,5 +15,3 @@ export interface ILoginUser {
 
 export type IPUser = Omit<IUser, 'password' | 'created_at' | 'updated_at'>
 
-
-export TDcodedUser = {}
